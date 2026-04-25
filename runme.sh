@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -eux -o pipefail
-rm root || true
-rm meta || true
 nixos-rebuild build-image --image-variant lxc --flake .#container
-ln -s $(realpath result/tarball/nixos-image-lxc*) root
+root=$(realpath result/tarball/nixos-image-lxc*)
 nixos-rebuild build-image --image-variant lxc-metadata --flake .#container
-ln -s $(realpath result/tarball/nixos-image-lxc-metadata*) meta
-incus image import meta root
+meta=$(realpath result/tarball/nixos-image-lxc-metadata*)
+incus image import $meta $root --alias nixos-base
+incus launch -e nixos-base builder
+incus file push flake.nix builder/etc/nixos/flake.nix
+incus exec -- builder nixos-rebuild build --flake /etc/nixos#container
