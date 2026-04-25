@@ -5,6 +5,6 @@ root=$(realpath result/tarball/nixos-image-lxc*)
 nixos-rebuild build-image --image-variant lxc-metadata --flake .#container
 meta=$(realpath result/tarball/nixos-image-lxc-metadata*)
 incus image import $meta $root --alias nixos-base
-incus launch -e nixos-base builder
+incus launch -e nixos-base builder --config security.nesting=true
 incus file push flake.nix builder/etc/nixos/flake.nix
 incus exec -- builder nixos-rebuild build --flake /etc/nixos#container
