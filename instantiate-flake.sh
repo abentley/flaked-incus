@@ -4,7 +4,7 @@ set -eux -o pipefail
 make_snapshot() {
   incus storage volume snapshot restore local flaked-incus latest
   incus launch nixos-base builder --config security.nesting=true
-  incus config device add builder nix-store disk pool=local source=flaked-incus path=/nix/store
+  incus config device add builder nix-dir disk pool=local source=flaked-incus path=/nix
   sleep 5
   incus file push flake.nix builder/etc/nixos/flake.nix
   incus file push flake.lock builder/etc/nixos/flake.lock
@@ -19,7 +19,7 @@ if ! incus storage volume snapshot show local flaked-incus/$target &> /dev/null;
 fi
 incus storage volume copy local/flaked-incus/$target local/flaked-incus-$target-workload
 incus launch nixos-base $target
-incus config device add $target flaked-incus-$target-workload disk pool=local source=flaked-incus path=/nix/store
+incus config device add $target flaked-incus-$target-workload disk pool=local source=flaked-incus path=/nix
 incus file push flake.nix $target/etc/nixos/flake.nix
 incus file push flake.lock $target/etc/nixos/flake.lock
 sleep 5
