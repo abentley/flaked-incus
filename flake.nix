@@ -16,6 +16,7 @@
                 "flakes"
                 "nix-command"
               ];
+              nix.settings.eval-cache = true;
 
               # Let 'nixos-version --json' know about the Git revision
               # of this flake.
