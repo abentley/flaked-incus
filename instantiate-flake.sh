@@ -2,7 +2,6 @@
 : ${target=$1}
 set -eux -o pipefail
 make_snapshot() {
-  incus exec -- builder nixos-rebuild build --flake /etc/nixos#$target
   incus storage volume snapshot create local flaked-incus $SNAPSHOT_HASH
   incus storage volume snapshot create local flaked-incus latest --reuse
 }
@@ -12,7 +11,7 @@ incus config device add builder nix-dir disk pool=local source=flaked-incus path
 incus file push flake.nix builder/etc/nixos/flake.nix
 incus file push flake.lock builder/etc/nixos/flake.lock
 sleep 5
-STORE_PATH=$(incus exec builder -- nix eval /etc/nixos#nixosConfigurations.${target}.config.system.build.toplevel.outPath --raw)
+STORE_PATH=$(incus exec -- builder nix build /etc/nixos#.nixosConfigurations.${target}.config.system.build.toplevel --print-out-paths)
 SNAPSHOT_HASH=$(echo -n "$STORE_PATH"|sha256sum|cut -c1-16)
 if ! incus storage volume snapshot show local flaked-incus/$SNAPSHOT_HASH &> /dev/null; then
   make_snapshot
