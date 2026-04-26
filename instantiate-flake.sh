@@ -11,7 +11,7 @@ incus config device add builder nix-dir disk pool=local source=flaked-incus path
 incus file push flake.nix builder/etc/nixos/flake.nix
 incus file push flake.lock builder/etc/nixos/flake.lock
 sleep 5
-STORE_PATH=$(incus exec -- builder nix build /etc/nixos#.nixosConfigurations.${target}.config.system.build.toplevel --print-out-paths)
+STORE_PATH=$(incus exec -- builder nix build /etc/nixos#.nixosConfigurations.${target}.config.system.build.toplevel --print-out-paths --no-link)
 SNAPSHOT_HASH=$(echo -n "$STORE_PATH"|sha256sum|cut -c1-16)
 if ! incus storage volume snapshot show local flaked-incus/$SNAPSHOT_HASH &> /dev/null; then
   make_snapshot
