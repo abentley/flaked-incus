@@ -12,6 +12,6 @@ incus storage volume snapshot create local flaked-incus latest --reuse
 incus rm --force builder
 incus storage volume copy local/flaked-incus/latest local/flaked-incus-$target-workload
 incus launch nixos-base $target
-incus config device add $target flaked-incus-$target-workload disk pool=local source=flaked-incus path=/nix
+incus config device add $target flaked-incus-$target-workload disk pool=local source=flaked-incus-$target-workload path=/nix
 sleep 5
 incus exec -- $target $STORE_PATH/bin/switch-to-configuration switch
